@@ -8,3 +8,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
+
+  profiles:
+    active: local
+    include: secret

@@ -1,7 +1,7 @@
 package kukekyakya.kukemarket.controller.sign;
 
 import javax.validation.Valid;
-import kukekyakya.kukemarket.controller.response.Response;
+import kukekyakya.kukemarket.dto.response.Response;
 import kukekyakya.kukemarket.dto.sign.SignInRequest;
 import kukekyakya.kukemarket.dto.sign.SignUpRequest;
 import kukekyakya.kukemarket.service.sign.SignService;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import static kukekyakya.kukemarket.controller.response.Response.success;
+import static kukekyakya.kukemarket.dto.response.Response.success;
 
 //JSON으로 응답하기 위해 RestController
 @RestController

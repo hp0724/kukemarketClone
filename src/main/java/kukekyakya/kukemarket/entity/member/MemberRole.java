@@ -1,7 +1,9 @@
 package kukekyakya.kukemarket.entity.member;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.*;
+
+import javax.persistence.*;
 
 @Entity
 @Getter

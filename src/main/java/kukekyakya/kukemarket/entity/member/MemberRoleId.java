@@ -1,6 +1,6 @@
 package kukekyakya.kukemarket.entity.member;
 
-import jakarta.persistence.Embeddable;
+import javax.persistence.Embeddable;
 import lombok.*;
 
 import java.io.Serializable;

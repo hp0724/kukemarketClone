@@ -1,6 +1,6 @@
 package kukekyakya.kukemarket.entity.member;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import kukekyakya.kukemarket.entity.common.EntityDate;
 import lombok.AccessLevel;
 import lombok.Getter;

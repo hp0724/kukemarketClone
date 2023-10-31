@@ -1,7 +1,7 @@
 package kukekyakya.kukemarket.repository.member;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import kukekyakya.kukemarket.entity.member.Member;
 import kukekyakya.kukemarket.entity.member.MemberRole;
 import kukekyakya.kukemarket.entity.member.Role;

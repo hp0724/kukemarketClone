@@ -23,7 +23,7 @@ public class JwtHandler {
     public String extractSubject(String encodedKey, String token) {
         return parse(encodedKey, token).getBody().getSubject();
     }
-
+    //jwt 검증
     public boolean validate(String encodedKey, String token) {
         try {
             parse(encodedKey, token);
@@ -32,7 +32,7 @@ public class JwtHandler {
             return false;
         }
     }
-
+    //parse 를통해서 jwt 만들기
     private Jws<Claims> parse(String key, String token) {
         return Jwts.parser()
                 .setSigningKey(key)

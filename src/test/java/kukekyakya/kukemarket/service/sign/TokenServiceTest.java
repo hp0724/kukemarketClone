@@ -58,4 +58,45 @@ public class TokenServiceTest {
         assertThat(token).isEqualTo("refresh");
         verify(jwtHandler).createToken(anyString(), anyString(), anyLong());
     }
+
+    @Test
+    void validateAccessTokenTest(){
+        given(jwtHandler.validate(anyString(),anyString())).willReturn(true);
+        assertThat(tokenService.validateAccessToken("token")).isTrue();
+    }
+
+    @Test
+    void invalidateAccessTokenTest(){
+        given(jwtHandler.validate(anyString(),anyString())).willReturn(false);
+        assertThat(tokenService.validateAccessToken("token")).isFalse();
+    }
+
+    @Test
+    void validateRefreshTokenTest(){
+        given(jwtHandler.validate(anyString(),anyString())) .willReturn(true);
+        assertThat(tokenService.validateRefreshToken("token")).isTrue();
+    }
+
+    @Test
+    void invalidateRefreshTokenTest(){
+        given(jwtHandler.validate(anyString(),anyString())).willReturn(false);
+        assertThat(tokenService.validateRefreshToken("token")).isFalse();
+
+    }
+
+    @Test
+    void extractAccessTokenSubjectTest(){
+        String subject ="subject";
+        given(jwtHandler.extractSubject(anyString(),anyString())).willReturn(subject);
+        String result = tokenService.extractAccessTokenSubject("token");
+        assertThat(subject).isEqualTo(result);
+    }
+
+    @Test
+    void extractRefreshTokenSubjectTest(){
+        String subject ="subject";
+        given(jwtHandler.extractSubject(anyString(),anyString())).willReturn(subject);
+        String result = tokenService.extractRefreshTokenSubject("token");
+        assertThat(subject).isEqualTo(result);
+    }
 }

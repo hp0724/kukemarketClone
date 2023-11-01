@@ -26,7 +26,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     //exception 관련 URL 에 대해서는 다시 검사하지 않는다.
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().mvcMatchers("/exception/**");
+        web.ignoring().mvcMatchers("/exception/**",
+                "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**");
     }
 
     @Override

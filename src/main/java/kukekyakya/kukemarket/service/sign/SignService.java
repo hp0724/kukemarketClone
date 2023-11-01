@@ -1,14 +1,12 @@
 package kukekyakya.kukemarket.service.sign;
 
+import kukekyakya.kukemarket.dto.sign.RefreshTokenResponse;
 import kukekyakya.kukemarket.dto.sign.SignInRequest;
 import kukekyakya.kukemarket.dto.sign.SignInResponse;
 import kukekyakya.kukemarket.dto.sign.SignUpRequest;
 import kukekyakya.kukemarket.entity.member.Member;
 import kukekyakya.kukemarket.entity.member.RoleType;
-import kukekyakya.kukemarket.exception.LoginFailureException;
-import kukekyakya.kukemarket.exception.MemberEmailAlreadyExistsException;
-import kukekyakya.kukemarket.exception.MemberNicknameAlreadyExistsException;
-import kukekyakya.kukemarket.exception.RoleNotFoundException;
+import kukekyakya.kukemarket.exception.*;
 import kukekyakya.kukemarket.repository.member.MemberRepository;
 import kukekyakya.kukemarket.repository.role.RoleRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class SignService {
     private final MemberRepository memberRepository;
     private final RoleRepository roleRepository;
@@ -33,6 +30,7 @@ public class SignService {
                 passwordEncoder));
     }
 
+    @Transactional(readOnly = true)
     public SignInResponse signIn(SignInRequest req) {
         Member member = memberRepository.findByEmail(req.getEmail()).orElseThrow(LoginFailureException::new);
         validatePassword(req, member);
@@ -58,7 +56,19 @@ public class SignService {
             throw new MemberNicknameAlreadyExistsException(req.getNickname());
     }
 
+    public RefreshTokenResponse refreshToken(String rToken){
+        validateRefreshToken(rToken);
+        String subject =tokenService.extractRefreshTokenSubject(rToken);
+        String accessToken = tokenService.createAccessToken(subject);
+        return new RefreshTokenResponse(accessToken);
 
+    }
+
+    private void validateRefreshToken(String rToken) {
+        if(!tokenService.validateRefreshToken(rToken)){
+            throw new AuthenticationEntryPointException();
+        }
+    }
 
 
 }

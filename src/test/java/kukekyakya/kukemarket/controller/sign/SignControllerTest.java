@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static kukekyakya.kukemarket.factory.dto.RefreshTokenResponseFactory.createRefreshTokenResponse;
 import static kukekyakya.kukemarket.factory.dto.SignInRequestFactory.createSignInRequest;
 import static kukekyakya.kukemarket.factory.dto.SignUpRequestFactory.createSignUpRequest;
 import static org.mockito.BDDMockito.given;
@@ -65,6 +66,19 @@ public class SignControllerTest {
                 .andExpect(jsonPath("$.result.data.refreshToken").value("refresh"));
 
         verify(signService).signIn(req);
+    }
+
+    @Test
+    void refreshTokenTest() throws Exception {
+        given(signService.refreshToken("refreshToken")).willReturn(createRefreshTokenResponse("accessToken"));
+
+        mockMvc.perform(
+                post("/api/refresh-token")
+                        .header("Authorization","refreshToken"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result.data.accessToken").value("accessToken"));
+
+
     }
 
 

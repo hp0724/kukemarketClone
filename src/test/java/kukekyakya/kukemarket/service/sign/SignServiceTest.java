@@ -1,15 +1,13 @@
 package kukekyakya.kukemarket.service.sign;
 
+import kukekyakya.kukemarket.dto.sign.RefreshTokenResponse;
 import kukekyakya.kukemarket.dto.sign.SignInRequest;
 import kukekyakya.kukemarket.dto.sign.SignInResponse;
 import kukekyakya.kukemarket.dto.sign.SignUpRequest;
 import kukekyakya.kukemarket.entity.member.Member;
 import kukekyakya.kukemarket.entity.member.Role;
 import kukekyakya.kukemarket.entity.member.RoleType;
-import kukekyakya.kukemarket.exception.LoginFailureException;
-import kukekyakya.kukemarket.exception.MemberEmailAlreadyExistsException;
-import kukekyakya.kukemarket.exception.MemberNicknameAlreadyExistsException;
-import kukekyakya.kukemarket.exception.RoleNotFoundException;
+import kukekyakya.kukemarket.exception.*;
 import kukekyakya.kukemarket.repository.member.MemberRepository;
 import kukekyakya.kukemarket.repository.role.RoleRepository;
 import org.junit.jupiter.api.Test;
@@ -124,6 +122,28 @@ public class SignServiceTest {
                 .isInstanceOf(LoginFailureException.class);
     }
 
+    @Test
+    void refreshTokenTest(){
+        String refreshToken = "refreshToken";
+        String subject = "subject";
+        String accessToken = "accessToken";
+        given(tokenService.validateRefreshToken(refreshToken)).willReturn(true);
+        given(tokenService.extractRefreshTokenSubject(refreshToken)).willReturn(subject);
+        given(tokenService.createAccessToken(subject)).willReturn(accessToken);
+
+        RefreshTokenResponse res  = signService.refreshToken(refreshToken);
+
+        assertThat(res.getAccessToken()).isEqualTo(accessToken);
+    }
+
+    @Test
+    void refreshTokenExceptionByInvalidTokenTest(){
+        String refreshToken = "refreshToken";
+        given(tokenService.validateRefreshToken(refreshToken)).willReturn(false);
+
+        assertThatThrownBy(()->signService.refreshToken(refreshToken))
+                .isInstanceOf(AuthenticationEntryPointException.class);
+    }
 
 
 }

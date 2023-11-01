@@ -15,7 +15,7 @@ public class MemberGuard {
     //요청한 사용자가 인증되었는지 ,액세스 토큰을 통한 요청인지
     // 자원 접근권한을 가지고 있는지
     public boolean check(Long id ){
-        return authHelper.isAuthenticated() && authHelper.isAccessTokenType() && hasAuthority(id);
+        return authHelper.isAuthenticated() && hasAuthority(id);
     }
     private boolean hasAuthority(Long id ){
         Long memberId = authHelper.extractMemberId();

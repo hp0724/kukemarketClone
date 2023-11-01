@@ -32,7 +32,10 @@ public class CategoryCreateRequest {
     private Long parentId;
 
    public static Category toEntity(CategoryCreateRequest req,CategoryRepository categoryRepository){
-       return new Category(req.getName(), Optional.ofNullable(req.getParentId()).map(id->categoryRepository.findById(id).orElseThrow(CategoryNotFoundException::new)).orElse(null));
+       return new Category(req.getName(),
+               Optional.ofNullable(req.getParentId())
+                       .map(id->categoryRepository.findById(id).orElseThrow(CategoryNotFoundException::new))
+                       .orElse(null));
    }
 
 

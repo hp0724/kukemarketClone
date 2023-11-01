@@ -19,6 +19,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static kukekyakya.kukemarket.factory.dto.SignInRequestFactory.createSignInRequest;
+import static kukekyakya.kukemarket.factory.dto.SignUpRequestFactory.createSignUpRequest;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
@@ -39,7 +41,7 @@ public class SignControllerAdviceTest {
     }
     @Test
     void signInLoginFailureExceptionTest() throws Exception{
-        SignInRequest req = new SignInRequest("email@email.com", "123456a!");
+        SignInRequest req = createSignInRequest("email@email.com", "123456a!");
         given(signService.signIn(any())).willThrow(LoginFailureException.class);
 
         mockMvc.perform(
@@ -51,7 +53,7 @@ public class SignControllerAdviceTest {
     @Test
     void signInMethodArgumentNotValidExceptionTest() throws Exception{
         // 비밀번호가 숫자로만 이루어져서 에러 발생
-        SignInRequest req = new SignInRequest("email","1234567");
+        SignInRequest req = createSignInRequest("email","1234567");
 
         mockMvc.perform(
                 post("/api/sign-in")
@@ -63,7 +65,7 @@ public class SignControllerAdviceTest {
     @Test
     void signUpMemberEmailAlreadyExistsExceptionTest() throws Exception {
         // given
-        SignUpRequest req = new SignUpRequest("email@email.com", "123456a!", "username", "nickname");
+        SignUpRequest req = createSignUpRequest("email@email.com", "123456a!", "username", "nickname");
         doThrow(MemberEmailAlreadyExistsException.class).when(signService).signUp(any());
 
         // when, then
@@ -77,7 +79,7 @@ public class SignControllerAdviceTest {
     @Test
     void signUpMemberNicknameAlreadyExistsExceptionTest() throws Exception{
 
-        SignUpRequest req = new SignUpRequest("email@email.com", "123456a!", "username", "nickname");
+        SignUpRequest req = createSignUpRequest("email@email.com", "123456a!", "username", "nickname");
         doThrow(MemberNicknameAlreadyExistsException.class).when(signService).signUp(any());
 
         mockMvc.perform(
@@ -89,7 +91,7 @@ public class SignControllerAdviceTest {
 
     @Test
     void signUpRoleNotFoundExceptionTest() throws Exception {
-        SignUpRequest req = new SignUpRequest("email@email.com", "123456a!", "username", "nickname");
+        SignUpRequest req = createSignUpRequest("email@email.com", "123456a!", "username", "nickname");
         doThrow(RoleNotFoundException.class).when(signService).signUp(any());
 
         mockMvc.perform(
@@ -101,7 +103,7 @@ public class SignControllerAdviceTest {
 
     @Test
     void signUpMethodArgumentNotValidExceptionTest() throws Exception{
-        SignUpRequest req =new SignUpRequest("","","","");
+        SignUpRequest req =createSignUpRequest("","","","");
         mockMvc.perform(
                 post("/api/sign-up")
                         .contentType(MediaType.APPLICATION_JSON)

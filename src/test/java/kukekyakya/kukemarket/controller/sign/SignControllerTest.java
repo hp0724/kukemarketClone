@@ -16,6 +16,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static kukekyakya.kukemarket.factory.dto.SignInRequestFactory.createSignInRequest;
+import static kukekyakya.kukemarket.factory.dto.SignUpRequestFactory.createSignUpRequest;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -37,7 +39,7 @@ public class SignControllerTest {
     @Test
     void signUpTest() throws Exception {
         // given
-        SignUpRequest req = new SignUpRequest("email@email.com", "123456a!", "username", "nickname");
+        SignUpRequest req = createSignUpRequest("email@email.com", "123456a!", "username", "nickname");
 
         // when, then
         mockMvc.perform(
@@ -51,7 +53,7 @@ public class SignControllerTest {
 
     @Test
     void signInTest() throws Exception{
-        SignInRequest req = new SignInRequest("email@email.com", "123456a!");
+        SignInRequest req = createSignInRequest("email@email.com", "123456a!");
         given(signService.signIn(req)).willReturn(new SignInResponse("access","refresh"));
 
         mockMvc.perform(

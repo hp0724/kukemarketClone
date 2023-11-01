@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
+import static kukekyakya.kukemarket.factory.entity.MemberFactory.createMember;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -55,7 +56,5 @@ public class MemberServiceTest {
         given(memberRepository.existsById(anyLong())).willReturn(false);
         assertThatThrownBy(()->memberService.delete(1L)).isInstanceOf(MemberNotFoundException.class);
     }
-    private Member createMember() {
-        return new Member("email@email.com", "123456a!", "username", "nickname", List.of());
-    }
+
 }

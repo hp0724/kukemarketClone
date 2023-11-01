@@ -1,5 +1,6 @@
 package kukekyakya.kukemarket.config.security;
 
+import kukekyakya.kukemarket.config.token.TokenHelper;
 import kukekyakya.kukemarket.service.sign.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,13 +13,13 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Slf4j
 public class JwtAuthenticationFilter extends GenericFilter {
-    private final TokenService tokenService;
+    private final TokenHelper accessTokenHelper;
     private final CustomUserDetailService userDetailService;
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         String token = extractToken(request);
         if(validateAccessToken(token)){
-            setAccessAuthentication("access",token);
+            setAccessAuthentication( token);
         }
 //        else if (validateRefreshToken(token)){
 //            setRefreshAuthentication("refresh",token);
@@ -32,7 +33,7 @@ public class JwtAuthenticationFilter extends GenericFilter {
 
     }
     private boolean validateAccessToken (String token){
-        return token !=null && tokenService.validateAccessToken(token);
+        return token !=null && accessTokenHelper.validate(token);
     }
 
 //    private boolean validateRefreshToken(String token){
@@ -40,8 +41,8 @@ public class JwtAuthenticationFilter extends GenericFilter {
 //
 //    }
 
-    private void setAccessAuthentication(String type,String token){
-        String userId = tokenService.extractAccessTokenSubject(token);
+    private void setAccessAuthentication(String token){
+        String userId = accessTokenHelper.extractSubject(token);
         CustomUserDetails userDetails = userDetailService.loadUserByUsername(userId);
         SecurityContextHolder.getContext().setAuthentication(new CustomAuthenticationToken(userDetails,userDetails.getAuthorities()));
     }

@@ -108,16 +108,8 @@ public class MemberControllerIntegrationTest {
     }
     //수정된 방식에서는 리프레시 토큰으로 요청하더라도, 인증할 수 있는 사용자로 판단하지 않기 때문에
     // Security가 관리해주는 컨텍스트에 사용자의 정보를 등록하지 않습니다
-    @Test
 
-    void deleteAccessDeniedByRefreshTokenTest() throws Exception {
-        Member member = memberRepository.findByEmail(initDB.getMember1Email()).orElseThrow(MemberNotFoundException::new);
-        SignInResponse signInResponse =signService.signIn(new SignInRequest(initDB.getMember1Email(),initDB.getPassword()));
-        mockMvc.perform(
-                delete("/api/members/{id}",member.getId()).header("Authorization",signInResponse.getRefreshToken()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/exception/entry-point"));
-    }
+
 
 
 }

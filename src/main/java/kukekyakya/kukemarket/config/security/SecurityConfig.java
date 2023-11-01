@@ -1,5 +1,6 @@
 package kukekyakya.kukemarket.config.security;
 
+import kukekyakya.kukemarket.config.token.TokenHelper;
 import kukekyakya.kukemarket.service.sign.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private final TokenService tokenService;
+    private final TokenHelper accessTokenHelper;
     private final CustomUserDetailService userDetailService;
 
     //spring security 무시할 URL
@@ -46,7 +47,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(tokenService,userDetailService), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(accessTokenHelper,userDetailService), UsernamePasswordAuthenticationFilter.class);
                 //addFilterBefore 를 통해 이전 위치에 등록
     }
 

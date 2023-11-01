@@ -1,5 +1,6 @@
 package kukekyakya.kukemarket.service.sign;
 
+import kukekyakya.kukemarket.config.token.TokenHelper;
 import kukekyakya.kukemarket.dto.sign.RefreshTokenResponse;
 import kukekyakya.kukemarket.dto.sign.SignInRequest;
 import kukekyakya.kukemarket.dto.sign.SignInResponse;
@@ -10,6 +11,7 @@ import kukekyakya.kukemarket.entity.member.RoleType;
 import kukekyakya.kukemarket.exception.*;
 import kukekyakya.kukemarket.repository.member.MemberRepository;
 import kukekyakya.kukemarket.repository.role.RoleRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Optional;
 
 import static java.util.Collections.emptyList;
+import static kukekyakya.kukemarket.factory.dto.SignInRequestFactory.createSignInRequest;
 import static kukekyakya.kukemarket.factory.dto.SignUpRequestFactory.createSignUpRequest;
 import static kukekyakya.kukemarket.factory.entity.MemberFactory.createMember;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -31,7 +34,6 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class SignServiceTest {
-    @InjectMocks
     SignService signService;
     @Mock
     MemberRepository memberRepository;
@@ -39,7 +41,16 @@ public class SignServiceTest {
     RoleRepository roleRepository;
     @Mock
     PasswordEncoder passwordEncoder;
-    @Mock TokenService tokenService;
+    @Mock
+    TokenHelper accessTokenHelper;
+    @Mock
+    TokenHelper refreshTokenHelper;
+    //SignService에 선언되어있던 @InjectMokcs가 제거되었고,
+    // @BeforeEach에서 직접적으로 인스턴스를 생성하여 의존성을 초기화해주고 있습니다.
+    @BeforeEach
+    void beforeEach(){
+        signService = new SignService(memberRepository,roleRepository,passwordEncoder,accessTokenHelper,refreshTokenHelper);
+    }
 
     @Test
     void signUpTest() {
@@ -90,11 +101,11 @@ public class SignServiceTest {
         // given
         given(memberRepository.findByEmail(any())).willReturn(Optional.of(createMember()));
         given(passwordEncoder.matches(anyString(), anyString())).willReturn(true);
-        given(tokenService.createAccessToken(anyString())).willReturn("access");
-        given(tokenService.createRefreshToken(anyString())).willReturn("refresh");
+        given(accessTokenHelper.createToken(anyString())).willReturn("access");
+        given(refreshTokenHelper.createToken(anyString())).willReturn("refresh");
 
         // when
-        SignInResponse res = signService.signIn(new SignInRequest("email", "password"));
+        SignInResponse res = signService.signIn(createSignInRequest("email", "password"));
 
         // then
         assertThat(res.getAccessToken()).isEqualTo("access");
@@ -107,7 +118,7 @@ public class SignServiceTest {
         given(memberRepository.findByEmail(any())).willReturn(Optional.empty());
 
         // when, then
-        assertThatThrownBy(() -> signService.signIn(new SignInRequest("email", "password")))
+        assertThatThrownBy(() -> signService.signIn(createSignInRequest("email", "password")))
                 .isInstanceOf(LoginFailureException.class);
     }
 
@@ -127,9 +138,9 @@ public class SignServiceTest {
         String refreshToken = "refreshToken";
         String subject = "subject";
         String accessToken = "accessToken";
-        given(tokenService.validateRefreshToken(refreshToken)).willReturn(true);
-        given(tokenService.extractRefreshTokenSubject(refreshToken)).willReturn(subject);
-        given(tokenService.createAccessToken(subject)).willReturn(accessToken);
+        given(refreshTokenHelper.validate(refreshToken)).willReturn(true);
+        given(refreshTokenHelper.extractSubject(refreshToken)).willReturn(subject);
+        given(accessTokenHelper.createToken(subject)).willReturn(accessToken);
 
         RefreshTokenResponse res  = signService.refreshToken(refreshToken);
 
@@ -139,7 +150,7 @@ public class SignServiceTest {
     @Test
     void refreshTokenExceptionByInvalidTokenTest(){
         String refreshToken = "refreshToken";
-        given(tokenService.validateRefreshToken(refreshToken)).willReturn(false);
+        given(refreshTokenHelper.validate(refreshToken)).willReturn(false);
 
         assertThatThrownBy(()->signService.refreshToken(refreshToken))
                 .isInstanceOf(AuthenticationEntryPointException.class);

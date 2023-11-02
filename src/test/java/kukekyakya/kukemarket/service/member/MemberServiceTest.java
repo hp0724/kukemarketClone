@@ -45,15 +45,15 @@ public class MemberServiceTest {
 
     @Test
     void deleteTest() {
-        given(memberRepository.existsById(anyLong())).willReturn(true);
+        given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(createMember()));
         memberService.delete(1L);
-        verify(memberRepository).deleteById(anyLong());
+        verify(memberRepository).delete(any());
     }
 
     @Test
 
     void deleteExceptionByMemberNotFoundTest(){
-        given(memberRepository.existsById(anyLong())).willReturn(false);
+        given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(null));
         assertThatThrownBy(()->memberService.delete(1L)).isInstanceOf(MemberNotFoundException.class);
     }
 

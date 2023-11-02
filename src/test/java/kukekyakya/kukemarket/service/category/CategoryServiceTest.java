@@ -12,8 +12,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static kukekyakya.kukemarket.factory.dto.CategoryCreateRequestFactory.createCategoryCreateRequest;
+import static kukekyakya.kukemarket.factory.entity.CategoryFactory.createCategory;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -51,15 +53,21 @@ public class CategoryServiceTest {
     }
 
     @Test
-    void deleteTest(){
-        given(categoryRepository.existsById(anyLong())).willReturn(true);
+    void deleteTest() {
+        // given
+        given(categoryRepository.findById(anyLong())).willReturn(Optional.of(createCategory()));
+
+        // when
         categoryService.delete(1L);
-        verify(categoryRepository).deleteById(anyLong());
+
+        // then
+        verify(categoryRepository).delete(any());
     }
+
 
     @Test
     void deleteExceptionByCategoryNotFoundTest(){
-        given(categoryRepository.existsById(anyLong())).willReturn(false);
+        given(categoryRepository.findById(anyLong())).willReturn(Optional.ofNullable(null));
         assertThatThrownBy(()->categoryService.delete(1L)).isInstanceOf(CategoryNotFoundException.class);
     }
 }

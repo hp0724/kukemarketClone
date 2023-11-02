@@ -21,7 +21,7 @@ public class CustomUserDetailService implements UserDetailsService {
     private final MemberRepository memberRepository;
     @Override
     public CustomUserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-        Member member = memberRepository.findById(Long.valueOf(userId))
+        Member member = memberRepository.findWithRolesById(Long.valueOf(userId))
                 .orElseGet(()->new Member(null,null,null,null, List.of()));
 
         return new CustomUserDetails(

@@ -38,3 +38,4 @@ out/
 
 # .gitignore
 application-secret.yml
+/src/test/resources/static/*

@@ -10,6 +10,7 @@ import kukekyakya.kukemarket.init.TestInitDB;
 import kukekyakya.kukemarket.repository.category.CategoryRepository;
 import kukekyakya.kukemarket.repository.member.MemberRepository;
 import kukekyakya.kukemarket.repository.post.PostRepository;
+import kukekyakya.kukemarket.repository.post.PostRepositoryTest;
 import kukekyakya.kukemarket.service.sign.SignService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,10 +28,13 @@ import java.util.List;
 
 import static kukekyakya.kukemarket.factory.dto.PostCreateRequestFactory.createPostCreateRequest;
 import static kukekyakya.kukemarket.factory.dto.SignInRequestFactory.createSignInRequest;
+import static kukekyakya.kukemarket.factory.entity.PostFactory.createPost;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -107,4 +111,12 @@ public class PostControllerIntegrationTest {
                 .andExpect(redirectedUrl("/exception/entry-point"));
 
     }
+    @Test
+    void readTest() throws Exception {
+        Post post =postRepository.save(createPost(member,category));
+        mockMvc.perform(
+                get("/api/posts/{id}",post.getId())
+          ).andExpect(status().isOk());
+    }
+
 }

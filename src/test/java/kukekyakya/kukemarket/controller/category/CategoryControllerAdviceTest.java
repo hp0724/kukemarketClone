@@ -1,5 +1,6 @@
-package kukekyakya.kukemarket.advice;
+package kukekyakya.kukemarket.controller.category;
 
+import kukekyakya.kukemarket.advice.ExceptionAdvice;
 import kukekyakya.kukemarket.controller.category.CategoryController;
 import kukekyakya.kukemarket.exception.CannotConvertNestedStructureException;
 import kukekyakya.kukemarket.exception.CategoryNotFoundException;

@@ -21,6 +21,7 @@ import java.util.List;
 import static kukekyakya.kukemarket.factory.dto.PostCreateRequestFactory.createPostCreateRequestWithImages;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -68,5 +69,15 @@ public class PostControllerTest {
 
         PostCreateRequest capturedRequest = postCreateRequestArgumentCaptor.getValue();
         assertThat(capturedRequest.getImages().size()).isEqualTo(2);
+    }
+
+    @Test
+    void readTest()throws Exception{
+        Long id =1L;
+
+        mockMvc.perform(
+                get("/api/posts/{id}",id))
+                .andExpect(status().isOk());
+        verify(postService).read(id);
     }
 }

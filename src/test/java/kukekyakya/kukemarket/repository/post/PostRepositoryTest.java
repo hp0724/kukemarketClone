@@ -1,4 +1,4 @@
-package kukekyakya.kukemarket.repository.repository;
+package kukekyakya.kukemarket.repository.post;
 
 import kukekyakya.kukemarket.entity.category.Category;
 import kukekyakya.kukemarket.entity.member.Member;
@@ -8,7 +8,6 @@ import kukekyakya.kukemarket.exception.PostNotFoundException;
 import kukekyakya.kukemarket.repository.category.CategoryRepository;
 import kukekyakya.kukemarket.repository.member.MemberRepository;
 import kukekyakya.kukemarket.repository.post.ImageRepository;
-import kukekyakya.kukemarket.repository.post.PostRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,6 +129,14 @@ public class PostRepositoryTest {
         // then
         List<Post> result = postRepository.findAll();
         assertThat(result.size()).isZero();
+    }
+
+    @Test
+    void findByIdWithMemberTest(){
+        Post post = postRepository.save(createPost(member,category));
+        Post foundPost = postRepository.findByIdWithMember(post.getId()).orElseThrow(PostNotFoundException::new);
+        Member foundMember =foundPost.getMember();
+        assertThat(foundMember.getEmail()).isEqualTo(member.getEmail());
     }
 
     void clear() {

@@ -1,8 +1,7 @@
-package kukekyakya.kukemarket.repository.repository;
+package kukekyakya.kukemarket.repository.category;
 
 import kukekyakya.kukemarket.entity.category.Category;
 import kukekyakya.kukemarket.exception.CategoryNotFoundException;
-import kukekyakya.kukemarket.repository.category.CategoryRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;

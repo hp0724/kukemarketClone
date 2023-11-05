@@ -1,13 +1,16 @@
 package kukekyakya.kukemarket.service.post;
 
 import kukekyakya.kukemarket.dto.post.PostCreateRequest;
-import kukekyakya.kukemarket.entity.category.Category;
+import kukekyakya.kukemarket.dto.post.PostDto;
+import kukekyakya.kukemarket.entity.post.Post;
 import kukekyakya.kukemarket.exception.CategoryNotFoundException;
 import kukekyakya.kukemarket.exception.MemberNotFoundException;
+import kukekyakya.kukemarket.exception.PostNotFoundException;
 import kukekyakya.kukemarket.exception.UnsupportedImageFormatException;
 import kukekyakya.kukemarket.repository.category.CategoryRepository;
 import kukekyakya.kukemarket.repository.member.MemberRepository;
 import kukekyakya.kukemarket.repository.post.PostRepository;
+import kukekyakya.kukemarket.repository.post.PostRepositoryTest;
 import kukekyakya.kukemarket.service.file.FileService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,6 +31,7 @@ import static kukekyakya.kukemarket.factory.entity.CategoryFactory.createCategor
 import static kukekyakya.kukemarket.factory.entity.ImageFactory.createImage;
 import static kukekyakya.kukemarket.factory.entity.MemberFactory.createMember;
 import static kukekyakya.kukemarket.factory.entity.PostFactory.createPostWithImages;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
@@ -88,5 +92,22 @@ public class PostServiceTest {
 
         assertThatThrownBy(()-> postService.create(req)).isInstanceOf(UnsupportedImageFormatException.class);
 
+    }
+
+    @Test
+    void readTest(){
+        Post post = createPostWithImages(List.of(createImage(),createImage()));
+        given(postRepository.findById(anyLong())).willReturn(Optional.of(post));
+
+        PostDto postDto = postService.read(1L);
+
+        assertThat(postDto.getTitle()).isEqualTo(post.getTitle());
+        assertThat(postDto.getImages().size()).isEqualTo(post.getImages().size());
+    }
+
+    @Test
+    void readExceptionByPostNotFoundTest(){
+        given(postRepository.findById(anyLong())).willReturn(Optional.ofNullable(null));
+        assertThatThrownBy(()->postService.read(1L)).isInstanceOf(PostNotFoundException.class);
     }
 }

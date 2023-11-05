@@ -21,8 +21,7 @@ import java.util.List;
 import static kukekyakya.kukemarket.factory.dto.PostCreateRequestFactory.createPostCreateRequestWithImages;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -79,5 +78,14 @@ public class PostControllerTest {
                 get("/api/posts/{id}",id))
                 .andExpect(status().isOk());
         verify(postService).read(id);
+    }
+
+    @Test
+    void deleteTest() throws Exception {
+        Long id =1L ;
+        mockMvc.perform(
+                delete("/api/posts/{id}",id))
+                .andExpect(status().isOk());
+        verify(postService).delete(id);
     }
 }

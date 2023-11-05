@@ -35,6 +35,21 @@ public class LocalFileServiceTest {
         assertThat(isExists(testLocation+filename)).isTrue();
     }
 
+    @Test
+    void deleteTest(){
+        MultipartFile file = new MockMultipartFile("myFile", "myFile.txt", MediaType.TEXT_PLAIN_VALUE, "test".getBytes());
+        String filename ="testFile.txt";
+        localFileService.upload(file,filename);
+        boolean before = isExists(testLocation+filename);
+
+        localFileService.delete(filename);
+
+        boolean after =isExists(testLocation+filename);
+        assertThat(before).isTrue();
+        assertThat(after).isFalse();
+
+    }
+
     boolean isExists(String filePath){
         return new File(filePath).exists();
     }

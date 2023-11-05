@@ -38,4 +38,13 @@ public class PostController {
     public Response read(@ApiParam(value="게시글 id",required=true) @PathVariable Long id){
         return Response.success(postService.read(id));
     }
+
+    @ApiOperation(value="게시글 삭제" ,notes = "게시글을 삭제한다.")
+    @DeleteMapping("/api/posts/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    //삭제에 성공한 200 상태코드
+    public Response delete(@ApiParam(value="게시글 id",readOnly = true) @PathVariable Long id){
+        postService.delete(id);
+        return Response.success();
+    }
 }

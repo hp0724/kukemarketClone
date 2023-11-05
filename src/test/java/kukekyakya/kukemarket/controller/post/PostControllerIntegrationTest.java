@@ -6,11 +6,13 @@ import kukekyakya.kukemarket.entity.category.Category;
 import kukekyakya.kukemarket.entity.member.Member;
 import kukekyakya.kukemarket.entity.post.Post;
 import kukekyakya.kukemarket.exception.MemberNotFoundException;
+import kukekyakya.kukemarket.exception.PostNotFoundException;
 import kukekyakya.kukemarket.init.TestInitDB;
 import kukekyakya.kukemarket.repository.category.CategoryRepository;
 import kukekyakya.kukemarket.repository.member.MemberRepository;
 import kukekyakya.kukemarket.repository.post.PostRepository;
 import kukekyakya.kukemarket.repository.post.PostRepositoryTest;
+import kukekyakya.kukemarket.service.post.PostService;
 import kukekyakya.kukemarket.service.sign.SignService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,15 +27,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
+import java.util.Objects;
 
 import static kukekyakya.kukemarket.factory.dto.PostCreateRequestFactory.createPostCreateRequest;
 import static kukekyakya.kukemarket.factory.dto.SignInRequestFactory.createSignInRequest;
 import static kukekyakya.kukemarket.factory.entity.PostFactory.createPost;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -57,21 +60,25 @@ public class PostControllerIntegrationTest {
     PostRepository postRepository;
     @Autowired
     SignService signService;
+    @Autowired
+    PostService postService;
 
-    Member member;
+    Member member1,member2,admin;
     Category category;
     @BeforeEach
     void beforeEach() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
         initDB.initDB();
-        member=memberRepository.findByEmail(initDB.getMember1Email()).orElseThrow(MemberNotFoundException::new);
+        member1=memberRepository.findByEmail(initDB.getMember1Email()).orElseThrow(MemberNotFoundException::new);
+        member2=memberRepository.findByEmail(initDB.getMember2Email()).orElseThrow(MemberNotFoundException::new);
+        admin = memberRepository.findByEmail(initDB.getAdminEmail()).orElseThrow(MemberNotFoundException::new);
         category = categoryRepository.findAll().get(0);
     }
 
     @Test
     void createTest() throws Exception{
-        SignInResponse signInRes = signService.signIn(createSignInRequest(member.getEmail(), initDB.getPassword()));
-        PostCreateRequest req = createPostCreateRequest("title", "content", 1000L, member.getId(), category.getId(), List.of());
+        SignInResponse signInRes = signService.signIn(createSignInRequest(member1.getEmail(), initDB.getPassword()));
+        PostCreateRequest req = createPostCreateRequest("title", "content", 1000L, member1.getId(), category.getId(), List.of());
 
         mockMvc.perform(
                 multipart("/api/posts")
@@ -90,12 +97,12 @@ public class PostControllerIntegrationTest {
         Post post =postRepository.findAll().get(0);
         assertThat(post.getTitle()).isEqualTo("title");
         assertThat(post.getContent()).isEqualTo("content");
-        assertThat(post.getMember().getId()).isEqualTo(member.getId());
+        assertThat(post.getMember().getId()).isEqualTo(member1.getId());
     }
 
     @Test
     void createUnauthorizedByNoneTokenTest() throws Exception{
-        PostCreateRequest req = createPostCreateRequest("title","content",1000L,member.getId(),category.getId(),List.of());
+        PostCreateRequest req = createPostCreateRequest("title","content",1000L,member1.getId(),category.getId(),List.of());
         mockMvc.perform(
                 multipart("/api/posts")
                         .param("title",req.getTitle())
@@ -113,10 +120,59 @@ public class PostControllerIntegrationTest {
     }
     @Test
     void readTest() throws Exception {
-        Post post =postRepository.save(createPost(member,category));
+        Post post =postRepository.save(createPost(member1,category));
         mockMvc.perform(
                 get("/api/posts/{id}",post.getId())
           ).andExpect(status().isOk());
     }
+
+    @Test
+    void deleteByResourceOwnerTest() throws Exception {
+        // given
+        Post post = postRepository.save(createPost(member1, category));
+        SignInResponse signInRes = signService.signIn(createSignInRequest(member1.getEmail(), initDB.getPassword()));
+
+        // when, then
+        mockMvc.perform(
+                        delete("/api/posts/{id}", post.getId())
+                                .header("Authorization", signInRes.getAccessToken()))
+                .andExpect(status().isOk());
+
+        assertThatThrownBy(() -> postService.read(post.getId())).isInstanceOf(PostNotFoundException.class);
+    }
+
+    @Test
+    void deleteByAdminTest() throws Exception {
+        Post post =postRepository.save(createPost(member1,category));
+        SignInResponse adminSignInRes = signService.signIn(createSignInRequest(admin.getEmail(),initDB.getPassword()));
+
+        mockMvc.perform(
+                delete("/api/posts/{id}",post.getId())
+                        .header("Authorization",adminSignInRes.getAccessToken())
+               ).andExpect(status().isOk());
+
+        assertThatThrownBy(()->postService.read(post.getId())).isInstanceOf(PostNotFoundException.class);
+    }
+    @Test
+    void deleteAccessDeniedByNotResourceOwnerTest()throws Exception{
+        Post post =postRepository.save(createPost(member1,category));
+        SignInResponse notOwnerSignInRes = signService.signIn(createSignInRequest(member2.getEmail(),initDB.getPassword()));
+
+        mockMvc.perform(
+                delete("/api/posts/{id}",post.getId())
+                        .header("Authorization",notOwnerSignInRes.getAccessToken())
+                ).andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/exception/access-denied"));
+    }
+
+    @Test
+    void deleteUnauthorizedByNoneTokenTest()throws Exception{
+        Post post = postRepository.save(createPost(member1,category));
+        mockMvc.perform(
+                delete("/api/posts/{id}",post.getId()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/exception/entry-point"));
+    }
+
 
 }

@@ -36,7 +36,9 @@ public class PostDto {
             post.getPrice(),
             MemberDto.toDto(post.getMember()),
             post.getImages().stream().map(image -> ImageDto.toDto(image)).collect(toList()),
-            post.getCreatedAt(), post.getModifiedAt());
+            post.getCreatedAt(),
+            post.getModifiedAt()
+        );
 
     }
 }

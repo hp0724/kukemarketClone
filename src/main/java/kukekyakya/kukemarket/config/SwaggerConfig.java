@@ -40,19 +40,19 @@ public class SwaggerConfig {
     }
 
 
-    private ApiKey apiKey() {
-        return new ApiKey("Authorization","Bearer Token","header");
+    private static ApiKey apiKey() {
+        return new ApiKey("Authorization", "Bearer Token", "header");
     }
-    private SecurityContext securityContext(){
+
+    private SecurityContext securityContext() {
         return SecurityContext.builder().securityReferences(defaultAuth())
-                .operationSelector(oc->oc.requestMappingPattern().startsWith("/api/")).build();
+                .operationSelector(oc -> oc.requestMappingPattern().startsWith("/api/")).build();
     }
 
-    private List <SecurityReference> defaultAuth(){
-        AuthorizationScope authorizationScope = new AuthorizationScope("global","global access");
-        return List.of(new SecurityReference("Authorization",new AuthorizationScope[]{authorizationScope}));
+    private List<SecurityReference> defaultAuth() {
+        AuthorizationScope authorizationScope = new AuthorizationScope("global", "global access");
+        return List.of(new SecurityReference("Authorization", new AuthorizationScope[] {authorizationScope}));
     }
-
 
 
 

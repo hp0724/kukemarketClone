@@ -2,6 +2,8 @@ package kukekyakya.kukemarket.service.post;
 
 import kukekyakya.kukemarket.dto.post.PostCreateRequest;
 import kukekyakya.kukemarket.dto.post.PostDto;
+import kukekyakya.kukemarket.dto.post.PostUpdateRequest;
+import kukekyakya.kukemarket.entity.post.Image;
 import kukekyakya.kukemarket.entity.post.Post;
 import kukekyakya.kukemarket.exception.CategoryNotFoundException;
 import kukekyakya.kukemarket.exception.MemberNotFoundException;
@@ -25,10 +27,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static java.util.stream.Collectors.toList;
 import static kukekyakya.kukemarket.factory.dto.PostCreateRequestFactory.createPostCreateRequest;
 import static kukekyakya.kukemarket.factory.dto.PostCreateRequestFactory.createPostCreateRequestWithImages;
+import static kukekyakya.kukemarket.factory.dto.PostUpdateRequestFactory.createPostUpdateRequest;
 import static kukekyakya.kukemarket.factory.entity.CategoryFactory.createCategory;
-import static kukekyakya.kukemarket.factory.entity.ImageFactory.createImage;
+import static kukekyakya.kukemarket.factory.entity.ImageFactory.*;
 import static kukekyakya.kukemarket.factory.entity.MemberFactory.createMember;
 import static kukekyakya.kukemarket.factory.entity.PostFactory.createPostWithImages;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,7 +60,7 @@ public class PostServiceTest {
         given(memberRepository.findById(anyLong())).willReturn(Optional.of(createMember()));
         given(categoryRepository.findById(anyLong())).willReturn(Optional.of(createCategory()));
         given(postRepository.save(any())).willReturn(createPostWithImages(
-                IntStream.range(0,req.getImages().size()).mapToObj(i->createImage()).collect(Collectors.toList())
+                IntStream.range(0,req.getImages().size()).mapToObj(i->createImage()).collect(toList())
         ));
 
         postService.create(req);
@@ -128,5 +132,35 @@ public class PostServiceTest {
     void deleteExceptionByNotFoundPostTest(){
         given(postRepository.findById(anyLong())).willReturn(Optional.ofNullable(null));
         assertThatThrownBy(()->postService.delete(1L)).isInstanceOf(PostNotFoundException.class);
+    }
+
+    @Test
+    void updateTest(){
+        Image a = createImageWithIdAndOriginName(1L,"a.png");
+        Image b = createImageWithIdAndOriginName(2L,"b.png");
+
+        Post post = createPostWithImages(List.of(a,b));
+        given(postRepository.findById(anyLong())).willReturn(Optional.of(post));
+        MockMultipartFile cFile =new MockMultipartFile("c","c.png",MediaType.IMAGE_PNG_VALUE,"c".getBytes());
+        PostUpdateRequest postUpdateRequest = createPostUpdateRequest("title","content",1000L,List.of(cFile),List.of(a.getId()));
+
+        postService.update(1L,postUpdateRequest);
+
+        List<Image> images =post.getImages();
+        List<String> originNames = images.stream().map(i->i.getOriginName()).collect(toList());
+
+        assertThat(originNames.size()).isEqualTo(2);
+        assertThat(originNames).contains(b.getOriginName(),cFile.getOriginalFilename());
+
+        verify(fileService,times(1)).upload(any(),anyString());
+        verify(fileService,times(1)).delete(anyString());
+    }
+
+    @Test
+    void updateExceptionByPostNotFoundTest(){
+        given(postRepository.findById(anyLong())).willReturn(Optional.ofNullable(null));
+
+        assertThatThrownBy(()->postService.update(1L,createPostUpdateRequest("title","content",1234L,List.of(),List.of())))
+                .isInstanceOf(PostNotFoundException.class);
     }
 }

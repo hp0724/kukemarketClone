@@ -21,10 +21,10 @@ public class PostDto {
     private MemberDto member;
     private List<ImageDto> images;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd`T`HH:mm:ss",timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd'T'HH:mm:ss",timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd`T`HH:mm:ss",timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd'T'HH:mm:ss",timezone = "Asia/Seoul")
     private LocalDateTime modifiedAt;
     //작성자의 정보도 함께 가지고 있다 .
     //각 게시글이 가지고 있는 이미지에 대한 정보도 반환

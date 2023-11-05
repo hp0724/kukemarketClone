@@ -1,8 +1,6 @@
 package kukekyakya.kukemarket.service.post;
 
-import kukekyakya.kukemarket.dto.post.PostCreateRequest;
-import kukekyakya.kukemarket.dto.post.PostCreateResponse;
-import kukekyakya.kukemarket.dto.post.PostDto;
+import kukekyakya.kukemarket.dto.post.*;
 import kukekyakya.kukemarket.entity.post.Image;
 import kukekyakya.kukemarket.entity.post.Post;
 import kukekyakya.kukemarket.exception.PostNotFoundException;
@@ -41,9 +39,7 @@ public class PostService {
         uploadImages(post.getImages(),req.getImages());
         return new PostCreateResponse(post.getId());
     }
-    private void uploadImages(List<Image> images , List<MultipartFile> fileImages){
-        IntStream.range(0, images.size()).forEach(i -> fileService.upload(fileImages.get(i),images.get(i).getUniqueName()));
-    }
+
 
     public PostDto read(Long id) {
         return PostDto.toDto(postRepository.findById(id).orElseThrow(PostNotFoundException::new));
@@ -56,7 +52,21 @@ public class PostService {
         postRepository.delete(post);
     }
 
-    private void deleteImages(List<Image> images) {
-        images.stream().forEach(i ->fileService.delete(i.getUniqueName()));
+
+    @Transactional
+    public PostUpdateResponse update(Long id, PostUpdateRequest req){
+        Post post=postRepository.findById(id).orElseThrow(PostNotFoundException::new);
+        Post.ImageUpdatedResult result =post.update(req);
+        uploadImages(result.getAddedImages(),result.getAddedImageFiles());
+        deleteImages(result.getDeletedImages());
+        return new PostUpdateResponse(id);
+    }
+
+    private void uploadImages(List<Image> images, List<MultipartFile> fileImages){
+        IntStream.range(0,images.size()).forEach(i->fileService.upload(fileImages.get(i),images.get(i).getUniqueName()));
+    }
+
+    private void deleteImages(List<Image> images){
+        images.stream().forEach(i->fileService.delete(i.getUniqueName()));
     }
 }

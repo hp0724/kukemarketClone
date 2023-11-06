@@ -69,4 +69,10 @@ public class PostService {
     private void deleteImages(List<Image> images){
         images.stream().forEach(i->fileService.delete(i.getUniqueName()));
     }
+
+    public PostListDto readAll(PostReadCondition cond){
+        return PostListDto.toDto(
+                postRepository.findAllByCondition(cond)
+        );
+    }
 }

@@ -1,6 +1,7 @@
 package kukekyakya.kukemarket.controller.post;
 
 import kukekyakya.kukemarket.dto.post.PostCreateRequest;
+import kukekyakya.kukemarket.dto.post.PostReadCondition;
 import kukekyakya.kukemarket.dto.sign.SignInResponse;
 import kukekyakya.kukemarket.entity.category.Category;
 import kukekyakya.kukemarket.entity.member.Member;
@@ -30,10 +31,12 @@ import java.util.List;
 import java.util.Objects;
 
 import static kukekyakya.kukemarket.factory.dto.PostCreateRequestFactory.createPostCreateRequest;
+import static kukekyakya.kukemarket.factory.dto.PostReadConditionFactory.createPostReadCondition;
 import static kukekyakya.kukemarket.factory.dto.SignInRequestFactory.createSignInRequest;
 import static kukekyakya.kukemarket.factory.entity.PostFactory.createPost;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
@@ -248,6 +251,18 @@ public class PostControllerIntegrationTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/exception/entry-point"));
 
+
+    }
+    @Test
+    void readAllTest()throws Exception{
+        PostReadCondition cond = createPostReadCondition(0,1);
+
+        mockMvc.perform(
+                get("/api/posts")
+                        .param("page",String.valueOf(cond.getPage())).param("size",String.valueOf(cond.getSize()))
+                        .param("categoryId",String.valueOf(1),String.valueOf(2))
+                        .param("memberId",String.valueOf(1),String.valueOf(2))
+        ).andExpect(status().isOk());
 
     }
 

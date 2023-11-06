@@ -1,9 +1,9 @@
 package kukekyakya.kukemarket.repository.post;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.querydsl.core.types.Predicate;
 import kukekyakya.kukemarket.dto.post.PostReadCondition;
 import kukekyakya.kukemarket.dto.post.PostSimpleDto;
 import kukekyakya.kukemarket.entity.post.Post;
@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.function.Function;
-
 
 import static com.querydsl.core.types.Projections.constructor;
 import static kukekyakya.kukemarket.entity.post.QPost.post;

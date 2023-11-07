@@ -47,6 +47,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers(HttpMethod.POST, "/api/posts").authenticated()
                     .antMatchers(HttpMethod.PUT,"/api/posts/{id}").access("@postGuard.check(#id)")
                     .antMatchers(HttpMethod.DELETE, "/api/posts/{id}").access("@postGuard.check(#id)")
+                    .antMatchers(HttpMethod.POST, "/api/comments").authenticated()
+                    .antMatchers(HttpMethod.DELETE, "/api/comments/{id}").access("@commentGuard.check(#id)")
                     .antMatchers(HttpMethod.GET,"/api/**").permitAll()
                     .anyRequest().hasAnyRole("ADMIN")
                 .and()

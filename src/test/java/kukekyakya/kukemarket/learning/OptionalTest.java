@@ -11,7 +11,7 @@ import static org.assertj.core.api.InstanceOfAssertFactories.optional;
 public class OptionalTest {
     @Test
     void doesNotInvokeOptionalInnerFunctionByOuterNullValueTest(){
-        Long result = Optional.ofNullable(null)
+        Long result = Optional.empty()
                 .map(id->Optional.ofNullable((Long) null).orElseThrow(RuntimeException::new))
                         .orElse(5L);
         //ofNullable에 null 주어진다면 , map은 호출되지 않는다.
@@ -21,7 +21,7 @@ public class OptionalTest {
     void catchWhenExceptionlsThownInOptionalInnerFunctionTest(){
         assertThatThrownBy(
                 ()->Optional.ofNullable(5L)
-                        .map(id->Optional.ofNullable((Long)null).orElseThrow(RuntimeException::new))
+                        .map(id-> Optional.<Long>empty().orElseThrow(RuntimeException::new))
                         .orElse(1L))
                 .isInstanceOf(RuntimeException.class);
 

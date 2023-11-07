@@ -38,7 +38,7 @@ public class MemberServiceTest {
 
     @Test
     void readExceptionByMemberNotFoundTests(){
-        given(memberRepository.findById(any())).willReturn(Optional.ofNullable(null));
+        given(memberRepository.findById(any())).willReturn(Optional.empty());
 
         assertThatThrownBy(()-> memberService.read(1L)).isInstanceOf(MemberNotFoundException.class);
     }
@@ -53,7 +53,7 @@ public class MemberServiceTest {
     @Test
 
     void deleteExceptionByMemberNotFoundTest(){
-        given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(null));
+        given(memberRepository.findById(anyLong())).willReturn(Optional.empty());
         assertThatThrownBy(()->memberService.delete(1L)).isInstanceOf(MemberNotFoundException.class);
     }
 

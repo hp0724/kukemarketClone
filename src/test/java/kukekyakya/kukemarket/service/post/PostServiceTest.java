@@ -74,7 +74,7 @@ public class PostServiceTest {
 
     @Test
     void createExceptionByMemberNotFoundTest(){
-        given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(null));
+        given(memberRepository.findById(anyLong())).willReturn(Optional.empty());
         assertThatThrownBy(()->postService.create(createPostCreateRequest())).isInstanceOf(MemberNotFoundException.class);
 
     }
@@ -82,7 +82,7 @@ public class PostServiceTest {
     @Test
     void createExceptionByCategoryNotFoundTest(){
         given(memberRepository.findById(anyLong())).willReturn(Optional.of(createMember()));
-        given(categoryRepository.findById(anyLong())).willReturn(Optional.ofNullable(null));
+        given(categoryRepository.findById(anyLong())).willReturn(Optional.empty());
 
         assertThatThrownBy(()->postService.create(createPostCreateRequest())).isInstanceOf(CategoryNotFoundException.class);
 
@@ -114,7 +114,7 @@ public class PostServiceTest {
 
     @Test
     void readExceptionByPostNotFoundTest(){
-        given(postRepository.findById(anyLong())).willReturn(Optional.ofNullable(null));
+        given(postRepository.findById(anyLong())).willReturn(Optional.empty());
         assertThatThrownBy(()->postService.read(1L)).isInstanceOf(PostNotFoundException.class);
     }
 
@@ -133,7 +133,7 @@ public class PostServiceTest {
     }
     @Test
     void deleteExceptionByNotFoundPostTest(){
-        given(postRepository.findById(anyLong())).willReturn(Optional.ofNullable(null));
+        given(postRepository.findById(anyLong())).willReturn(Optional.empty());
         assertThatThrownBy(()->postService.delete(1L)).isInstanceOf(PostNotFoundException.class);
     }
 
@@ -161,7 +161,7 @@ public class PostServiceTest {
 
     @Test
     void updateExceptionByPostNotFoundTest(){
-        given(postRepository.findById(anyLong())).willReturn(Optional.ofNullable(null));
+        given(postRepository.findById(anyLong())).willReturn(Optional.empty());
 
         assertThatThrownBy(()->postService.update(1L,createPostUpdateRequest("title","content",1234L,List.of(),List.of())))
                 .isInstanceOf(PostNotFoundException.class);

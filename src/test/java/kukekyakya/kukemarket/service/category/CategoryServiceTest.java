@@ -67,7 +67,7 @@ public class CategoryServiceTest {
 
     @Test
     void deleteExceptionByCategoryNotFoundTest(){
-        given(categoryRepository.findById(anyLong())).willReturn(Optional.ofNullable(null));
+        given(categoryRepository.findById(anyLong())).willReturn(Optional.empty());
         assertThatThrownBy(()->categoryService.delete(1L)).isInstanceOf(CategoryNotFoundException.class);
     }
 }

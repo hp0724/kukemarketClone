@@ -21,22 +21,29 @@ public class SignService {
     private final MemberRepository memberRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+
     private final TokenHelper accessTokenHelper;
     private final TokenHelper refreshTokenHelper;
 
     @Transactional
     public void signUp(SignUpRequest req) {
         validateSignUpInfo(req);
-        memberRepository.save(SignUpRequest.toEntity(req,
-                roleRepository.findByRoleType(RoleType.ROLE_NORMAL).orElseThrow(RoleNotFoundException::new),
-                passwordEncoder));
+        memberRepository.save(SignUpRequest.
+                toEntity(req,
+                        roleRepository.findByRoleType(RoleType.ROLE_NORMAL).orElseThrow(RoleNotFoundException::new),
+                        passwordEncoder));
     }
 
     @Transactional(readOnly = true)
     public SignInResponse signIn(SignInRequest req) {
+        //member 없으면 LoginFailureException
         Member member = memberRepository.findByEmail(req.getEmail()).orElseThrow(LoginFailureException::new);
+        //비밀번호 검사
         validatePassword(req, member);
+
+        //id를 subject 저장
         String subject = createSubject(member);
+        //id를 통해서 토큰 생성이고
         String accessToken = accessTokenHelper.createToken(subject);
         String refreshToken = refreshTokenHelper.createToken(subject);
         return new SignInResponse(accessToken, refreshToken);
@@ -44,6 +51,7 @@ public class SignService {
 
     private void validatePassword(SignInRequest req, Member member) {
         if(!passwordEncoder.matches(req.getPassword(), member.getPassword())) {
+            //비밀번호 다르면 exception
             throw new LoginFailureException();
         }
     }

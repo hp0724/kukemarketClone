@@ -14,7 +14,7 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SignInRequest {
-    @ApiModelProperty(value = "이메일", notes = "사용자의 이메일을 입력해주세요", required = true, example = "member@email.com")
+    @ApiModelProperty(value = "이메일", notes = "사용자의 이메일을 입력해주세요", required = true, example = "admin@admin.com")
     @Email(message = "이메일 형식을 맞춰주세요.")
     @NotBlank(message = "이메일을 입력해주세요.")
     private String email;

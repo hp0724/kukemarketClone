@@ -53,6 +53,8 @@ public class PostController {
     @ApiOperation(value = "게시글 수정",notes = "게시글을 수정한다.")
     @PutMapping("/api/posts/{id}")
     @ResponseStatus(HttpStatus.OK)
+    // @ModelAttribute
+    //사용자의 입력 데이터를 컨트롤러로 전달할 때, 그 데이터를 모델 객체로 변환하여 전달하는 데에 쓰입니다.
     public Response update(
             @ApiParam(value="게시글 id",required = true) @PathVariable Long id,
             @Valid @ModelAttribute PostUpdateRequest req){

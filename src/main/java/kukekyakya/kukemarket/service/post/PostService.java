@@ -27,6 +27,7 @@ public class PostService {
 
     @Transactional
     public PostCreateResponse create(PostCreateRequest req){
+        System.out.println(req.getImages());
         //전달받은 PostCreateRequest를 엔티티로 변환하고
         Post post =postRepository.save(
                 PostCreateRequest.toEntity(

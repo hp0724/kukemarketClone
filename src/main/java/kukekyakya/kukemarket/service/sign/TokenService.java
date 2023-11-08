@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+// 여기는 tokenCofig 사용으로 바뀜
 @Service
 @RequiredArgsConstructor
 public class TokenService {

@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,6 +34,7 @@ public class MemberRepositoryTest {
     MemberRepository memberRepository;
     @Autowired
     RoleRepository roleRepository;
+    //쿼리 도움
     @PersistenceContext
     EntityManager em;
 
@@ -45,6 +47,7 @@ public class MemberRepositoryTest {
 
         // when
         memberRepository.save(member);
+        //쿼리 즉시 실행 && 캐쉬 비우기
         clear();
 
         // then
@@ -77,12 +80,16 @@ public class MemberRepositoryTest {
         // given
         String updatedNickname = "updated";
         Member member = memberRepository.save(createMember());
-        clear();
 
         // when
         Member foundMember = memberRepository.findById(member.getId()).orElseThrow(MemberNotFoundException::new);
+
+        System.out.println(memberRepository.findById(member.getId()).orElseThrow(MemberNotFoundException::new).getNickname());
         foundMember.updateNickname(updatedNickname);
         clear();
+        System.out.println("===========================================");
+        System.out.println(memberRepository.findById(member.getId()).orElseThrow(MemberNotFoundException::new).getNickname());
+
 
         // then
         Member updatedMember = memberRepository.findById(member.getId()).orElseThrow(MemberNotFoundException::new);

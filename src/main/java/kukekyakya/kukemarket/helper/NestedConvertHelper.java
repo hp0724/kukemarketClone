@@ -8,6 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+//K : 엔티티의 key 타입
+//
+//E : 엔티티의 타입
+//
+//D : 엔티티가 변환된 DTO의 타입.
 public class NestedConvertHelper <K,E,D>{
     private List<E> entities;
     private Function<E,D> toDto;

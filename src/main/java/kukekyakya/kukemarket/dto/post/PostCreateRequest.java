@@ -55,12 +55,15 @@ public class PostCreateRequest {
     //이미지가 없을 경우의 NullPointerException을 대비하여 images는 비어있는 리스트로 초기화해주었습니
     public static Post toEntity(PostCreateRequest req, MemberRepository memberRepository, CategoryRepository categoryRepository) {
         return new Post(
+                //포스트 내용
                 req.title,
                 req.content,
                 req.price,
+                //작성자
                 memberRepository.findById(req.getMemberId()).orElseThrow(MemberNotFoundException::new),
                 categoryRepository.findById(req.getCategoryId()).orElseThrow(CategoryNotFoundException::new),
                 req.images.stream().map(i -> new Image(i.getOriginalFilename())).collect(toList())
         );
+
     }
 }

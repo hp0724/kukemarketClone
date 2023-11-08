@@ -1,7 +1,6 @@
 package kukekyakya.kukemarket.config.security;
 
 import kukekyakya.kukemarket.config.token.TokenHelper;
-import kukekyakya.kukemarket.service.sign.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;

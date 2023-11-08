@@ -34,6 +34,8 @@ public class TokenHelperTest {
 
         assertThat(createdToken).isEqualTo("token");
         verify(jwtHandler).createToken(anyString(),anyString(),anyLong());
+
+
     }
 
     @Test

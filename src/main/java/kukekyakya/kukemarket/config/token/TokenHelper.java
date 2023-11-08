@@ -11,6 +11,7 @@ public class TokenHelper {
 
     public String createToken(String subject){
         return jwtHandler.createToken(key,subject,maxAgeSeconds);
+
     }
 
     public boolean validate(String token){

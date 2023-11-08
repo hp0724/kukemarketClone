@@ -1,7 +1,6 @@
 package kukekyakya.kukemarket.config.security;
 
 import kukekyakya.kukemarket.config.token.TokenHelper;
-import kukekyakya.kukemarket.service.sign.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
